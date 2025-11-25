@@ -1,6 +1,6 @@
 console.log("MAIN CARREGADO!");
 
-import { addBook, listBooks, deleteBook } from "./idb.js";
+import { addRecipe, listRecipes, deleteRecipe } from "./idb.js";
 
 // -----------------------------
 // REGISTRO DO SERVICE WORKER
@@ -8,50 +8,49 @@ import { addBook, listBooks, deleteBook } from "./idb.js";
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("/sw.js")
-      .then(() => console.log("Service Worker registrado com sucesso!"))
-      .catch((err) => console.error("Erro ao registrar SW:", err));
+      .then(() => console.log("Service Worker registrado"))
+      .catch((err) => console.error("Erro SW:", err));
   });
 }
 
 // -----------------------------
 // ELEMENTOS DO FORMULÁRIO
 // -----------------------------
-const form = document.getElementById("book-form");
-const titleInput = document.getElementById("title-input");
-const authorInput = document.getElementById("author-input");
+const form = document.getElementById("recipe-form");
+const nameInput = document.getElementById("name-input");
+const ingredientsInput = document.getElementById("ingredients-input");
+const instructionsInput = document.getElementById("instructions-input");
 
-// PREVIEW
+// câmera
+const openCameraBtn = document.getElementById("open-camera-btn");
+const takePhotoBtn = document.getElementById("take-photo-btn");
+const camera = document.getElementById("camera");
+const cameraCanvas = document.getElementById("camera-canvas");
+
+// preview
 const previewDiv = document.getElementById("photo-preview");
 const previewImg = document.getElementById("preview-img");
 const removePhotoBtn = document.getElementById("remove-photo-btn");
 
-// CÂMERA
-const camera = document.getElementById("camera");
-const cameraCanvas = document.getElementById("camera-canvas");
-const openCameraBtn = document.getElementById("open-camera-btn");
-const takePhotoBtn = document.getElementById("take-photo-btn");
-
-let currentPhoto = null; // foto tirada
-let cameraStream = null;
+let currentPhoto = null;
+let stream = null;
 
 // -----------------------------
 // ABRIR CÂMERA
 // -----------------------------
 openCameraBtn.addEventListener("click", async () => {
   try {
-    cameraStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: "environment" } // câmera traseira do celular
-    });
+    stream = await navigator.mediaDevices.getUserMedia({ video: true });
 
-    camera.srcObject = cameraStream;
-
+    camera.srcObject = stream;
     camera.style.display = "block";
-    takePhotoBtn.style.display = "inline-block";
-    previewDiv.style.display = "none";
+    takePhotoBtn.style.display = "block";
 
-    console.log("Câmera aberta");
+    openCameraBtn.style.display = "none";
+
   } catch (err) {
-    alert("Erro ao acessar a câmera: " + err);
+    console.error("Erro ao abrir câmera:", err);
+    alert("Não foi possível acessar a câmera.");
   }
 });
 
@@ -59,30 +58,23 @@ openCameraBtn.addEventListener("click", async () => {
 // TIRAR FOTO
 // -----------------------------
 takePhotoBtn.addEventListener("click", () => {
-  const ctx = cameraCanvas.getContext("2d");
-
   cameraCanvas.width = camera.videoWidth;
   cameraCanvas.height = camera.videoHeight;
 
-  // Captura o quadro atual do vídeo
-  ctx.drawImage(camera, 0, 0, cameraCanvas.width, cameraCanvas.height);
+  const context = cameraCanvas.getContext("2d");
+  context.drawImage(camera, 0, 0);
 
-  // Salva como imagem
   currentPhoto = cameraCanvas.toDataURL("image/png");
 
-  // Exibe preview
   previewImg.src = currentPhoto;
   previewDiv.style.display = "block";
 
-  // Fecha câmera
+  // parar câmera
+  stream.getTracks().forEach(track => track.stop());
+
   camera.style.display = "none";
   takePhotoBtn.style.display = "none";
-
-  if (cameraStream) {
-    cameraStream.getTracks().forEach(track => track.stop());
-  }
-
-  console.log("Foto capturada!");
+  openCameraBtn.style.display = "block";
 });
 
 // -----------------------------
@@ -91,68 +83,71 @@ takePhotoBtn.addEventListener("click", () => {
 removePhotoBtn.addEventListener("click", () => {
   currentPhoto = null;
   previewDiv.style.display = "none";
-
-  // Permitir abrir a câmera de novo
-  openCameraBtn.style.display = "inline-block";
 });
 
 // -----------------------------
-// SALVAR LIVRO NO IDB
+// SALVAR RECEITA NO IDB
 // -----------------------------
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const book = {
-    title: titleInput.value,
-    author: authorInput.value,
-    photo: currentPhoto, // foto real capturada
+  const recipe = {
+    name: nameInput.value,
+    ingredients: ingredientsInput.value,
+    instructions: instructionsInput.value,
+    photo: currentPhoto,
     timestamp: Date.now()
   };
 
-  await addBook(book);
+  await addRecipe(recipe);
 
-  // Limpa formulário
-  titleInput.value = "";
-  authorInput.value = "";
-  previewDiv.style.display = "none";
+  // limpar
+  nameInput.value = "";
+  ingredientsInput.value = "";
+  instructionsInput.value = "";
   currentPhoto = null;
+  previewDiv.style.display = "none";
 
-  loadBooks();
+  loadRecipes();
 });
 
 // -----------------------------
-// LISTAR LIVROS
+// LISTAR RECEITAS
 // -----------------------------
-const listSection = document.getElementById("books-list");
+const listSection = document.getElementById("recipes-list");
 
-async function loadBooks() {
-  const books = await listBooks();
+async function loadRecipes() {
+  const recipes = await listRecipes();
 
-  if (books.length === 0) {
-    listSection.innerHTML = "<p>Nenhum livro cadastrado ainda.</p>";
+  if (recipes.length === 0) {
+    listSection.innerHTML = "<p>Nenhuma receita cadastrada ainda.</p>";
     return;
   }
 
   listSection.innerHTML = "";
 
-  books.forEach((book) => {
+  recipes.forEach((recipe) => {
     const div = document.createElement("div");
     div.className = "book-item";
 
     const img = document.createElement("img");
     img.className = "book-photo";
-    img.src = book.photo || "/images/icon-192.png";
+    img.src = recipe.photo || "/images/icon-192.png";
 
     const info = document.createElement("div");
     info.className = "book-info";
-    info.innerHTML = `<h3>${book.title}</h3><p>${book.author}</p>`;
+    info.innerHTML = `
+      <h3>${recipe.name}</h3>
+      <p><strong>Ingredientes:</strong> ${recipe.ingredients}</p>
+      <p><strong>Instruções:</strong> ${recipe.instructions}</p>
+    `;
 
     const delBtn = document.createElement("button");
     delBtn.className = "delete-btn";
     delBtn.textContent = "Excluir";
     delBtn.addEventListener("click", () => {
-      deleteBook(book.id);
-      loadBooks();
+      deleteRecipe(recipe.id);
+      loadRecipes();
     });
 
     div.appendChild(img);
@@ -163,5 +158,4 @@ async function loadBooks() {
   });
 }
 
-// Carrega ao iniciar
-loadBooks();
+loadRecipes();
