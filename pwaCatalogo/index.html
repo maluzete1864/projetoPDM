@@ -1,13 +1,73 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>package.json</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catálogo de Livros</title>
+
+  <!-- Manifest da PWA -->
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- CSS global -->
+ <link rel="stylesheet" href="/css/style.css">
+
+  <meta name="theme-color" content="#2b2f6b">
+
+</head>
+<body>
+  <header>
+    <h1>Catálogo de Livros</h1>
+  </header>
+
+  <main>
+    <section id="form-section" class="card">
+  <h2>Adicionar Livro</h2>
+
+  <form id="book-form">
+
+    <label>
+      Título:
+      <input type="text" id="title-input" required placeholder="Ex: Dom Casmurro">
+    </label>
+
+    <label>
+      Autor:
+      <input type="text" id="author-input" required placeholder="Ex: Machado de Assis">
+    </label>
+
+    <!-- Área de foto -->
+    <div class="photo-area">
+
+      <label>Foto do Livro (opcional)</label>
+
+      <!-- Upload normal (mobile usa câmera automaticamente) -->
+      <input type="file" id="file-input" accept="image/*" capture="environment">
+
+      <!-- Preview da imagem -->
+      <div id="photo-preview" style="display:none;">
+        <img id="preview-img" style="max-width:150px; border-radius:8px; margin-top:8px;">
+        <button type="button" id="remove-photo-btn">Remover Foto</button>
+      </div>
+
+    </div>
+
+    <button type="submit" id="submit-btn">Salvar Livro</button>
+
+  </form>
+</section>
+
+
+   <section id="list-section" class="card">
+  <h2>Meus Livros</h2>
+
+  <!-- Lista será preenchida via JavaScript -->
+  <div id="books-list">
+    <p>Nenhum livro cadastrado ainda.</p>
+  </div>
+</section>
+
+  </main>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
 </html>
