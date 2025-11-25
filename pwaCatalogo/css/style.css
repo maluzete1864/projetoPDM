@@ -7,70 +7,108 @@
 }
 
 body {
-  background: #f5f7fb;
-  color: #222;
+  background: #FFF5D9; /* amarelo pastel muito suave */
+  color: #4a3d2d;      /* marrom suave para contraste */
   padding-bottom: 40px;
 }
 
 /* ===== HEADER ===== */
 header {
-  background: #2b2f6b;
-  color: #fff;
-  padding: 20px;
+  background: linear-gradient(90deg, #FFE8A3, #FFC98B); /* gradiente pastel */
+  color: #4a3d2d;
+  padding: 22px;
   text-align: center;
+  font-weight: bold;
+  font-size: 24px;
+  border-bottom: 3px solid #f5c77a;
 }
 
 /* ===== CARDS ===== */
 .card {
   background: #ffffff;
-  padding: 16px;
-  margin: 20px auto;
+  padding: 18px;
+  margin: 22px auto;
   max-width: 600px;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border-radius: 12px;
+  border: 1px solid #ffe2a8;
+  box-shadow: 0 2px 10px rgba(255, 200, 120, 0.25);
 }
 
 h2 {
   margin-bottom: 15px;
+  color: #5c4830;
 }
 
 /* ===== FORMULARIO ===== */
 label {
   display: block;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
   font-weight: bold;
+  color: #6e573c;
 }
 
-input[type="text"],
-input[type="file"] {
+input[type="text"] {
   width: 100%;
-  padding: 8px;
+  padding: 10px;
   margin-top: 6px;
-  border: 1px solid #ccc;
+  border: 1.5px solid #ffd58a;
   border-radius: 6px;
+  background: #fff9ec;
+}
+
+input[type="text"]:focus {
+  border-color: #ffba57;
+  outline: none;
+  background: #fff4d6;
 }
 
 button,
 #submit-btn {
   width: 100%;
-  padding: 10px;
-  background: #2b2f6b;
+  padding: 12px;
+  background: #FFC98B; /* botão laranja pastel */
   border: none;
   border-radius: 6px;
-  color: #fff;
+  color: #4a3725;
   font-size: 16px;
+  font-weight: bold;
   cursor: pointer;
   margin-top: 10px;
+  transition: 0.2s;
 }
 
 button:hover,
 #submit-btn:hover {
-  opacity: 0.9;
+  background: #ffb96a;
+}
+
+/* ===== BOTÕES DA CÂMERA ===== */
+#open-camera-btn,
+#take-photo-btn {
+  background: #FFD782;
+}
+
+#open-camera-btn:hover,
+#take-photo-btn:hover {
+  background: #ffc157;
+}
+
+/* ==== VÍDEO DA CÂMERA ==== */
+#camera {
+  border-radius: 10px;
+  border: 2px solid #ffdd9b;
+  margin-top: 10px;
 }
 
 /* ===== PREVIEW DA FOTO ===== */
 #photo-preview {
-  margin-top: 10px;
+  margin-top: 14px;
+  padding-top: 8px;
+}
+
+#preview-img {
+  border: 2px solid #ffd796;
+  border-radius: 10px;
 }
 
 /* ===== LISTA DE LIVROS ===== */
@@ -78,32 +116,36 @@ button:hover,
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 10px 0;
-  border-bottom: 1px solid #eee;
+  padding: 12px 0;
+  border-bottom: 1px solid #ffe7b7;
 }
 
 .book-info h3 {
-  margin-bottom: 2px;
+  margin-bottom: 3px;
+  color: #4d3b2a;
 }
 
 .book-photo {
   width: 65px;
   height: 80px;
   object-fit: cover;
-  border-radius: 6px;
-  background: #ddd;
+  border-radius: 8px;
+  background: #ffeec9;
+  border: 1.5px solid #ffd59d;
 }
 
+/* ===== BOTÃO DE EXCLUIR ===== */
 .delete-btn {
-  background: #b80000;
-  padding: 6px 10px;
-  color: white;
+  background: #ff9e7a; /* laranja pastel mais escuro */
+  padding: 6px 12px;
+  color: #fff;
   border-radius: 6px;
   border: none;
   margin-left: auto;
   cursor: pointer;
+  transition: 0.2s;
 }
 
 .delete-btn:hover {
-  background: #8e0000;
+  background: #ff7d53;
 }

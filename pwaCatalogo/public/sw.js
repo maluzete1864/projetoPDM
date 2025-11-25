@@ -1,45 +1,40 @@
-importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.5.4/workbox-sw.js');
+const CACHE_NAME = "catalogo-v1";
+const FILES_TO_CACHE = [
+  "/",
+  "/index.html",
+  "/css/style.css",
+  "/src/main.js",
+  "/src/idb.js",
+  "/manifest.json"
+];
 
-if (workbox) {
-  workbox.precaching.precacheAndRoute([
-    { url: '/', revision: '1' },
-    { url: '/index.html', revision: '1' },
-    { url: '/offline.html', revision: '1' },
-    { url: '/css/style.css', revision: '1' }
-  ]);
-
-  // Páginas - fallback
-  workbox.routing.registerRoute(
-    ({request}) => request.mode === 'navigate',
-    async ({event}) => {
-      try {
-        return await workbox.strategies.NetworkFirst({
-          cacheName: 'pages-cache'
-        }).handle({event});
-      } catch (err) {
-        return caches.match('/offline.html');
-      }
-    }
+// Instalação: salva arquivos no cache
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then((cache) => cache.addAll(FILES_TO_CACHE))
   );
+});
 
-  // Cache de imagens
-  workbox.routing.registerRoute(
-    ({request}) => request.destination === 'image',
-    new workbox.strategies.CacheFirst({
-      cacheName: 'images-cache'
-    })
+// Ativação: limpa caches antigos
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches.keys().then((keyList) =>
+      Promise.all(
+        keyList.map((key) => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
+          }
+        })
+      )
+    )
   );
+});
 
-  // Cache de JS e CSS
-  workbox.routing.registerRoute(
-    ({request}) =>
-      request.destination === 'script' ||
-      request.destination === 'style',
-    new workbox.strategies.StaleWhileRevalidate({
-      cacheName: 'static-cache'
-    })
+// Fetch: usa cache quando offline
+self.addEventListener("fetch", (event) => {
+  event.respondWith(
+    caches.match(event.request)
+      .then((response) => response || fetch(event.request))
   );
-
-} else {
-  console.log("Workbox falhou");
-}
+});

@@ -34,22 +34,29 @@
       Autor:
       <input type="text" id="author-input" required placeholder="Ex: Machado de Assis">
     </label>
+<!-- Área de foto -->
+<div class="photo-area">
 
-    <!-- Área de foto -->
-    <div class="photo-area">
+  <label>Foto do Livro</label>
 
-      <label>Foto do Livro (opcional)</label>
+  <!-- Vídeo da câmera -->
+  <video id="camera" autoplay playsinline style="width: 200px; border-radius: 8px; display:none;"></video>
 
-      <!-- Upload normal (mobile usa câmera automaticamente) -->
-      <input type="file" id="file-input" accept="image/*" capture="environment">
+  <!-- Canvas para capturar a foto -->
+  <canvas id="camera-canvas" style="display:none;"></canvas>
 
-      <!-- Preview da imagem -->
-      <div id="photo-preview" style="display:none;">
-        <img id="preview-img" style="max-width:150px; border-radius:8px; margin-top:8px;">
-        <button type="button" id="remove-photo-btn">Remover Foto</button>
-      </div>
+  <!-- Botões -->
+  <button type="button" id="open-camera-btn">Abrir Câmera</button>
+  <button type="button" id="take-photo-btn" style="display:none;">Tirar Foto</button>
 
-    </div>
+  <!-- Preview da foto -->
+  <div id="photo-preview" style="display:none; margin-top: 10px;">
+    <img id="preview-img" style="max-width:150px; border-radius:8px;">
+    <button type="button" id="remove-photo-btn">Remover Foto</button>
+  </div>
+
+</div>
+
 
     <button type="submit" id="submit-btn">Salvar Livro</button>
 

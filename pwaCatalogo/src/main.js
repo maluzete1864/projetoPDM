@@ -1,4 +1,5 @@
 console.log("MAIN CARREGADO!");
+
 import { addBook, listBooks, deleteBook } from "./idb.js";
 
 // -----------------------------
@@ -7,8 +8,8 @@ import { addBook, listBooks, deleteBook } from "./idb.js";
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("/sw.js")
-      .then(() => console.log("SW registrado"))
-      .catch((err) => console.error("Erro SW:", err));
+      .then(() => console.log("Service Worker registrado com sucesso!"))
+      .catch((err) => console.error("Erro ao registrar SW:", err));
   });
 }
 
@@ -18,33 +19,81 @@ if ("serviceWorker" in navigator) {
 const form = document.getElementById("book-form");
 const titleInput = document.getElementById("title-input");
 const authorInput = document.getElementById("author-input");
-const fileInput = document.getElementById("file-input");
+
+// PREVIEW
 const previewDiv = document.getElementById("photo-preview");
 const previewImg = document.getElementById("preview-img");
 const removePhotoBtn = document.getElementById("remove-photo-btn");
 
-let currentPhoto = null; // DataURL
+// CÂMERA
+const camera = document.getElementById("camera");
+const cameraCanvas = document.getElementById("camera-canvas");
+const openCameraBtn = document.getElementById("open-camera-btn");
+const takePhotoBtn = document.getElementById("take-photo-btn");
+
+let currentPhoto = null; // foto tirada
+let cameraStream = null;
 
 // -----------------------------
-// PREVIEW DA FOTO
+// ABRIR CÂMERA
 // -----------------------------
-fileInput.addEventListener("change", async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
+openCameraBtn.addEventListener("click", async () => {
+  try {
+    cameraStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: "environment" } // câmera traseira do celular
+    });
 
-  const reader = new FileReader();
-  reader.onload = () => {
-    currentPhoto = reader.result;
-    previewImg.src = currentPhoto;
-    previewDiv.style.display = "block";
-  };
-  reader.readAsDataURL(file);
+    camera.srcObject = cameraStream;
+
+    camera.style.display = "block";
+    takePhotoBtn.style.display = "inline-block";
+    previewDiv.style.display = "none";
+
+    console.log("Câmera aberta");
+  } catch (err) {
+    alert("Erro ao acessar a câmera: " + err);
+  }
 });
 
+// -----------------------------
+// TIRAR FOTO
+// -----------------------------
+takePhotoBtn.addEventListener("click", () => {
+  const ctx = cameraCanvas.getContext("2d");
+
+  cameraCanvas.width = camera.videoWidth;
+  cameraCanvas.height = camera.videoHeight;
+
+  // Captura o quadro atual do vídeo
+  ctx.drawImage(camera, 0, 0, cameraCanvas.width, cameraCanvas.height);
+
+  // Salva como imagem
+  currentPhoto = cameraCanvas.toDataURL("image/png");
+
+  // Exibe preview
+  previewImg.src = currentPhoto;
+  previewDiv.style.display = "block";
+
+  // Fecha câmera
+  camera.style.display = "none";
+  takePhotoBtn.style.display = "none";
+
+  if (cameraStream) {
+    cameraStream.getTracks().forEach(track => track.stop());
+  }
+
+  console.log("Foto capturada!");
+});
+
+// -----------------------------
+// REMOVER FOTO
+// -----------------------------
 removePhotoBtn.addEventListener("click", () => {
   currentPhoto = null;
   previewDiv.style.display = "none";
-  fileInput.value = "";
+
+  // Permitir abrir a câmera de novo
+  openCameraBtn.style.display = "inline-block";
 });
 
 // -----------------------------
@@ -56,19 +105,19 @@ form.addEventListener("submit", async (e) => {
   const book = {
     title: titleInput.value,
     author: authorInput.value,
-    photo: currentPhoto,
+    photo: currentPhoto, // foto real capturada
     timestamp: Date.now()
   };
 
   await addBook(book);
 
+  // Limpa formulário
   titleInput.value = "";
   authorInput.value = "";
-  currentPhoto = null;
   previewDiv.style.display = "none";
-  fileInput.value = "";
+  currentPhoto = null;
 
-  loadBooks(); // Atualiza lista
+  loadBooks();
 });
 
 // -----------------------------

@@ -3,7 +3,7 @@
   "short_name": "Livros",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "background_color": "#2b2f6b",
   "theme_color": "#2b2f6b",
   "icons": [
     {
