@@ -1,3 +1,4 @@
+console.log("MAIN CARREGADO!");
 import { addBook, listBooks, deleteBook } from "./idb.js";
 
 // -----------------------------
