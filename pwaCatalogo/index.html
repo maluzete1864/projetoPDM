@@ -1,78 +1,54 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Catálogo de Receitas</title>
 
-  <!-- Manifest da PWA -->
   <link rel="manifest" href="/manifest.json">
-
-  <!-- CSS global -->
   <link rel="stylesheet" href="/css/style.css">
-
   <meta name="theme-color" content="#FFE8A3">
 </head>
-
 <body>
   <header>
     <h1>Catálogo de Receitas</h1>
   </header>
 
   <main>
-    <!-- FORMULÁRIO DE RECEITA -->
-    <section id="form-section" class="card">
+    <!-- Formulário -->
+    <section class="card">
       <h2>Adicionar Receita</h2>
-
       <form id="recipe-form">
-
-        <label>
-          Nome da Receita:
+        <label>Nome:
           <input type="text" id="name-input" required placeholder="Ex: Bolo de Cenoura">
         </label>
-
-        <label>
-          Ingredientes:
-          <textarea id="ingredients-input" required placeholder="Ex: 3 ovos, 2 xícaras de farinha..." rows="4"></textarea>
+        <label>Ingredientes:
+          <textarea id="ingredients-input" required placeholder="Ex: 3 ovos, 2 xícaras..." rows="4"></textarea>
+        </label>
+        <label>Instruções:
+          <textarea id="instructions-input" required placeholder="Descreva o preparo..." rows="4"></textarea>
         </label>
 
-        <label>
-          Instruções:
-          <textarea id="instructions-input" required placeholder="Descreva o modo de preparo..." rows="4"></textarea>
-        </label>
-
-        <!-- Área da câmera -->
+        <!-- Foto -->
         <div class="photo-area">
-          <label>Foto da Receita</label>
-
-          <!-- Vídeo da câmera -->
-          <video id="camera" autoplay playsinline style="width: 200px; border-radius: 8px; display:none;"></video>
-
-          <!-- Canvas para capturar a foto -->
+          <label>Foto</label>
+          <video id="camera" autoplay playsinline style="width:200px; border-radius:8px; display:none;"></video>
           <canvas id="camera-canvas" style="display:none;"></canvas>
-
-          <!-- Botões -->
           <button type="button" id="open-camera-btn">Abrir Câmera</button>
           <button type="button" id="take-photo-btn" style="display:none;">Tirar Foto</button>
-
-          <!-- Preview da foto -->
-          <div id="photo-preview" style="display:none; margin-top: 10px;">
+          <div id="photo-preview" style="display:none; margin-top:10px;">
             <img id="preview-img" style="max-width:150px; border-radius:8px;">
             <button type="button" id="remove-photo-btn">Remover Foto</button>
           </div>
-
         </div>
 
         <button type="submit" id="submit-btn">Salvar Receita</button>
-
       </form>
     </section>
 
-    <!-- LISTA DE RECEITAS -->
-    <section id="list-section" class="card">
+    <!-- Lista de receitas -->
+    <section class="card">
       <h2>Minhas Receitas</h2>
-
       <div id="recipes-list">
         <p>Nenhuma receita cadastrada ainda.</p>
       </div>
@@ -80,7 +56,5 @@
   </main>
 
   <script type="module" src="/src/main.js"></script>
-
 </body>
-
 </html>

@@ -1,6 +1,3 @@
-
-// CONFIGURAÇÃO DO INDEXEDDB
-
 const DB_NAME = "catalogoReceitasDB";
 const STORE_NAME = "receitas";
 const VERSION = 1;
@@ -12,13 +9,8 @@ function openDB() {
 
     request.onupgradeneeded = (event) => {
       const db = event.target.result;
-
-      // Se ainda não existir, cria o store das receitas
       if (!db.objectStoreNames.contains(STORE_NAME)) {
-        const store = db.createObjectStore(STORE_NAME, {
-          keyPath: "id",
-          autoIncrement: true
-        });
+        db.createObjectStore(STORE_NAME, { keyPath: "id", autoIncrement: true });
       }
     };
 
@@ -27,50 +19,30 @@ function openDB() {
   });
 }
 
-// 
-// adicionar receita
-//
-export async function addRecipe(recipe) {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_NAME, "readwrite");
-    const store = tx.objectStore(STORE_NAME);
-
-    const request = store.add(recipe);
-
-    request.onsuccess = () => resolve(true);
-    request.onerror = () => reject("Erro ao adicionar receita");
-  });
+// Função genérica para transações
+function transact(storeMode, action) {
+  return openDB().then(db => 
+    new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, storeMode);
+      const store = tx.objectStore(STORE_NAME);
+      const request = action(store);
+      request.onsuccess = () => resolve(request.result ?? true);
+      request.onerror = () => reject("Erro na operação IndexedDB");
+    })
+  );
 }
 
-//
-// listar receitas
-// 
-export async function listRecipes() {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_NAME, "readonly");
-    const store = tx.objectStore(STORE_NAME);
-
-    const request = store.getAll();
-
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject("Erro ao listar receitas");
-  });
+// Adicionar receita
+export function addRecipe(recipe) {
+  return transact("readwrite", store => store.add(recipe));
 }
 
-// 
-// deletar receita
-// 
-export async function deleteRecipe(id) {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_NAME, "readwrite");
-    const store = tx.objectStore(STORE_NAME);
+// Listar receitas
+export function listRecipes() {
+  return transact("readonly", store => store.getAll());
+}
 
-    const request = store.delete(id);
-
-    request.onsuccess = () => resolve(true);
-    request.onerror = () => reject("Erro ao deletar receita");
-  });
+// Deletar receita
+export function deleteRecipe(id) {
+  return transact("readwrite", store => store.delete(id));
 }
