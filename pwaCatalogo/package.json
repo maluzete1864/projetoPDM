@@ -8,8 +8,10 @@
     "build": "vite build",
     "preview": "vite preview"
   },
+  "dependencies": {
+    "vite": "^7.2.4"
+  },
   "devDependencies": {
-    "vite": "^7.2.4",
     "workbox-cacheable-response": "7.4.0",
     "workbox-expiration": "7.4.0",
     "workbox-recipes": "7.4.0",
